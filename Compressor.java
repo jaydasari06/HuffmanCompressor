@@ -79,7 +79,7 @@ public class Compressor {
      * Writes the header information to the output stream.
      * 
      * @param bout BitOutputStream for writing the header.
-     * @param numBits The current count of bits written (for tracking).
+     * @param numBits The current count of bits written.
      * @return The updated count of bits written after writing the header.
      * @throws IOException If an error occurs during writing.
      */
