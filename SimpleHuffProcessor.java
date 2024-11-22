@@ -1,7 +1,7 @@
 /*  Student information for assignment:
  *
- *  On <MY|OUR> honor, <NAME1> and <NAME2), this programming assignment is <MY|OUR> own work
- *  and <I|WE> have not provided this code to any other student.
+ *  On OUR honor, JAY DESARI and MUGUNTH SIDDHESH SURESH KANNA, this programming assignment is OUR own work
+ *  and WE have not provided this code to any other student.
  *
  *  Number of slip days used:
  *
@@ -11,8 +11,8 @@
  *  Grader name:
  *
  *  Student 2
- *  UTEID:
- *  email address:
+ *  UTEID: ms94655
+ *  email address: mugunth.sureshkanna@gmail.com
  *
  */
 
@@ -23,7 +23,7 @@ import java.io.OutputStream;
 public class SimpleHuffProcessor implements IHuffProcessor {
 
     private IHuffViewer myViewer;
-    private Compressor compressor;
+    private Compressor compressor; // Handles compression process and retains state from preprocessing
 
     /**
      * Preprocess data so that compression is possible ---
@@ -43,97 +43,99 @@ public class SimpleHuffProcessor implements IHuffProcessor {
      * @throws IOException if an error occurs while reading from the input file.
      */
     public int preprocessCompress(InputStream in, int headerFormat) throws IOException {
-        BitInputStream bin = new BitInputStream(in);
-        int[] freq = new int[ALPH_SIZE];
-        int totalUncompressedBits = 0;
-        // magic number and header format ints
-        int totalCompressedBits = BITS_PER_INT * 2;
-        int formatNumber = headerFormat;
-        boolean bitsExist = true;
+        BitInputStream bin = new BitInputStream(in); 
+        int[] freq = new int[ALPH_SIZE]; 
+        int totalUncompressedBits = 0; 
+        int totalCompressedBits = BITS_PER_INT * 2; 
+        boolean bitsExist = true; 
+
+        // Read and count character frequencies
         while (bitsExist) {
             int num = bin.read();
             if (num == -1) {
-                bitsExist = false;
+                bitsExist = false; // End of stream
             } else {
                 freq[num]++;
-                totalUncompressedBits += BITS_PER_WORD;          
+                totalUncompressedBits += BITS_PER_WORD;
             }
         }
         bin.close();
+
+        // Create Huffman tree and retrieve codes
         HuffmanTree tree = new HuffmanTree(freq);
         String[] huffCodes = tree.getHuffCodes();
-        int count = 0;
-        if (formatNumber == STORE_COUNTS) {
-            // store: int freqs of all indices (not including PEOF)
-            totalCompressedBits += BITS_PER_INT * ALPH_SIZE;
-        } else if (formatNumber == STORE_TREE) {
-            // tree: tree size (32 bits) + all 1 bit nodes
-            totalCompressedBits += BITS_PER_INT + tree.size();
-            for (int i = 0; i < huffCodes.length; i++) {
-                if (huffCodes[i] != null) {
-                    count++;
-                }
-            }
-            totalCompressedBits += count * 9;
+
+        // Adjust total compressed bits based on header format
+        if (headerFormat == STORE_COUNTS) {
+            totalCompressedBits += BITS_PER_INT * ALPH_SIZE; // Include frequency table size
+        } else if (headerFormat == STORE_TREE) {
+            totalCompressedBits += BITS_PER_INT + tree.size(); // Include tree size
+            totalCompressedBits += countLeafNodes(huffCodes) * 9; // Leaf nodes require 9 bits each
         }
+
+        // Calculate bits required for compressed data
         for (int i = 0; i < huffCodes.length - 1; i++) {
             if (freq[i] > 0) {
-                // all: length of total compressed file (non-header code)
                 totalCompressedBits += huffCodes[i].length() * freq[i];
             }
         }
-        totalCompressedBits += huffCodes[PSEUDO_EOF].length();
+        totalCompressedBits += huffCodes[PSEUDO_EOF].length(); // Include EOF marker
+
         int totalBitsSaved = totalUncompressedBits - totalCompressedBits;
-        compressor = new Compressor(freq, huffCodes, tree, formatNumber, count, totalBitsSaved);
+        compressor = new Compressor(freq, huffCodes, tree, headerFormat, countLeafNodes(huffCodes), totalBitsSaved);
         return totalBitsSaved;
     }
 
     /**
-	 * Compresses input to output, where the same InputStream has
-     * previously been pre-processed via <code>preprocessCompress</code>
-     * storing state used by this call.
-     * <br> pre: <code>preprocessCompress</code> must be called before this method
-     * @param in is the stream being compressed (NOT a BitInputStream)
-     * @param out is bound to a file/stream to which bits are written
-     * for the compressed file (not a BitOutputStream)
-     * @param force if this is true create the output file even if it is larger than the input file.
-     * If this is false do not create the output file if it is larger than the input file.
-     * @return the number of bits written.
-     * @throws IOException if an error occurs while reading from the input file or
-     * writing to the output file.
+     * Compresses the input stream into the output stream using the preprocessed Huffman codes.
+     * 
+     * @param in the input stream to be compressed
+     * @param out the output stream to write the compressed data
+     * @param force whether to compress even if the output size is larger than the input
+     * @return the number of bits written to the output
+     * @throws IOException if an error occurs during reading or writing
      */
     public int compress(InputStream in, OutputStream out, boolean force) throws IOException {
-        int numBitsWritten = 0;        
+        int numBitsWritten = 0;
         if (compressor.getBitsSaved() >= 0 || force) {
-            BitInputStream bin = new BitInputStream(in);
+            BitInputStream bin = new BitInputStream(in); 
             BitOutputStream bout = new BitOutputStream(out);
-            numBitsWritten = compressor.compress(bin, bout);
+            numBitsWritten = compressor.compress(bin, bout); // Perform compression
         }
-        showString(String.valueOf(numBitsWritten));
+        showString(String.valueOf(numBitsWritten)); 
         return numBitsWritten;
     }
 
     /**
-     * Uncompress a previously compressed stream in, writing the
-     * uncompressed bits/data to out.
-     * @param in is the previously compressed data (not a BitInputStream)
-     * @param out is the uncompressed file/stream
+     * Uncompresses a previously compressed stream and writes the uncompressed data to the output stream.
+     * 
+     * @param in the compressed input stream
+     * @param out the output stream for uncompressed data
      * @return the number of bits written to the uncompressed file/stream
-     * @throws IOException if an error occurs while reading from the input file or
-     * writing to the output file.
+     * @throws IOException if an error occurs during reading or writing
      */
     public int uncompress(InputStream in, OutputStream out) throws IOException {
-        BitInputStream bin = new BitInputStream(in);
-        BitOutputStream bout = new BitOutputStream(out);
-        Uncompressor uncompressor = new Uncompressor(bin, bout);
-	    return uncompressor.uncompress();
+        BitInputStream bin = new BitInputStream(in); 
+        BitOutputStream bout = new BitOutputStream(out); 
+        Uncompressor uncompressor = new Uncompressor(bin, bout); // Handles uncompression
+        return uncompressor.uncompress(); 
     }
 
+    /**
+     * Sets the viewer for displaying progress or results.
+     * 
+     * @param viewer the IHuffViewer instance to update
+     */
     public void setViewer(IHuffViewer viewer) {
         myViewer = viewer;
     }
 
-    private void showString(String s){
+    /**
+     * Displays a message on the viewer, if available.
+     * 
+     * @param s the message to display
+     */
+    private void showString(String s) {
         if (myViewer != null) {
             myViewer.update(s);
         }
