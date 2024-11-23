@@ -26,7 +26,6 @@ public class PriorityQueue<E extends Comparable<? super E>> {
     public void enqueue(E node) {
         int index = 0;
         if (arr.size() == 0) {
-            // If the queue is empty add the element
             arr.add(node);
         } else {
             // Find the correct position to maintain sorted order
