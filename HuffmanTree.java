@@ -125,7 +125,8 @@ public class HuffmanTree {
         while (!seenPEOF) {
             int bit = bitsIn.readBits(1);
             if (bit == -1) {
-                throw new IOException("Error reading compressed file. Unexpected end of input. No PSEUDO_EOF value.");
+                throw new IOException("Error reading compressed file. Unexpected end of input. "
+                        + "No PSEUDO_EOF value.");
             } else {
                 node = (bit == 0) ? node.getLeft() : node.getRight();
                 if (node.isLeaf()) {
@@ -161,7 +162,8 @@ public class HuffmanTree {
      */
     private void printTreeHeaderHelper(TreeNode node, StringBuilder sb) {
         if (node.isLeaf()) {
-            sb.append("1").append(String.format("%9s", Integer.toBinaryString(node.getValue())).replace(' ', '0'));
+            sb.append("1").append(String.format("%9s", Integer.toBinaryString(node.getValue()))
+                    .replace(' ', '0'));
         } else {
             sb.append("0");
             printTreeHeaderHelper(node.getLeft(), sb);

@@ -114,7 +114,8 @@ public class Compressor {
             }
         } else if (formatNumber == IHuffConstants.STORE_TREE) {
             // Write the size of the tree and its structure
-            bout.writeBits(IHuffConstants.BITS_PER_INT, count * (IHuffConstants.BITS_PER_WORD + 1) + tree.size());
+            bout.writeBits(IHuffConstants.BITS_PER_INT, count * (IHuffConstants.BITS_PER_WORD + 1) 
+                    + tree.size());
             numBits += IHuffConstants.BITS_PER_INT;
             String treeOutput = tree.printTreeHeader();
             for (int i = 0; i < treeOutput.length(); i++) {
