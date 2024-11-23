@@ -1,3 +1,21 @@
+/*  Student information for assignment:
+ *
+ *  On OUR honor, JAYACHANDRA DASARI and MUGUNTH SIDDHESH SURESH KANNA, this programming assignment is OUR own work
+ *  and WE have not provided this code to any other student.
+ *
+ *  Number of slip days used: 1
+ *
+ *  Student 1 (Student whose Canvas account is being used)
+ *  UTEID: jd53398
+ *  email address: jay.dasari@utexas.edu
+ *  Grader name: Bersam Basagaoglu
+ *
+ *  Student 2
+ *  UTEID: ms94655
+ *  email address: mugunth.sureshkanna@gmail.com
+ *
+ */
+
 import java.io.IOException;
 
 public class HuffmanTree {
@@ -34,7 +52,7 @@ public class HuffmanTree {
                 temp = new TreeNode(buildTree(treeSize, in, temp), 0,
                         buildTree(treeSize, in, temp));
             } else if (val == 1) {
-                val = in.readBits(9);
+                val = in.readBits(IHuffConstants.BITS_PER_WORD + 1);
                 treeSize[0]++;
                 return new TreeNode(val, 1);
             } else {

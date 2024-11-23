@@ -1,14 +1,14 @@
 /*  Student information for assignment:
  *
- *  On OUR honor, JAY DESARI and MUGUNTH SIDDHESH SURESH KANNA, this programming assignment is OUR own work
+ *  On OUR honor, JAYACHANDRA DASARI and MUGUNTH SIDDHESH SURESH KANNA, this programming assignment is OUR own work
  *  and WE have not provided this code to any other student.
  *
  *  Number of slip days used: 1
  *
  *  Student 1 (Student whose Canvas account is being used)
- *  UTEID:
- *  email address:
- *  Grader name:
+ *  UTEID: jd53398
+ *  email address: jay.dasari@utexas.edu
+ *  Grader name: Bersam Basagaoglu
  *
  *  Student 2
  *  UTEID: ms94655
@@ -70,7 +70,7 @@ public class SimpleHuffProcessor implements IHuffProcessor {
             totalCompressedBits += BITS_PER_INT * ALPH_SIZE; // Include frequency table size
         } else if (headerFormat == STORE_TREE) {
             totalCompressedBits += BITS_PER_INT + tree.size(); // Include tree size
-            totalCompressedBits += countLeafNodes(huffCodes) * 9; // Leaf nodes require 9 bits each
+            totalCompressedBits += countLeafNodes(huffCodes) * (BITS_PER_WORD + 1); // Leaf nodes require 9 bits each
         }
 
         // Calculate bits required for compressed data
@@ -139,5 +139,20 @@ public class SimpleHuffProcessor implements IHuffProcessor {
         if (myViewer != null) {
             myViewer.update(s);
         }
+    }
+
+    /**
+     * Counts number of leaf nodes in tree using its associated array
+     * 
+     * @param arr the array of codes associated with a huffman tree
+     */
+    private int countLeafNodes(String[] arr) {
+        int count = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] != null) {
+                count++;
+            }
+        }
+        return count;
     }
 }

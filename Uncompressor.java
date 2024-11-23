@@ -1,3 +1,21 @@
+/*  Student information for assignment:
+ *
+ *  On OUR honor, JAYACHANDRA DASARI and MUGUNTH SIDDHESH SURESH KANNA, this programming assignment is OUR own work
+ *  and WE have not provided this code to any other student.
+ *
+ *  Number of slip days used: 1
+ *
+ *  Student 1 (Student whose Canvas account is being used)
+ *  UTEID: jd53398
+ *  email address: jay.dasari@utexas.edu
+ *  Grader name: Bersam Basagaoglu
+ *
+ *  Student 2
+ *  UTEID: ms94655
+ *  email address: mugunth.sureshkanna@gmail.com
+ *
+ */
+
 import java.io.IOException;
 
 /**

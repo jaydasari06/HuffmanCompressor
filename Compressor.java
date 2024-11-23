@@ -1,3 +1,21 @@
+/*  Student information for assignment:
+ *
+ *  On OUR honor, JAYACHANDRA DASARI and MUGUNTH SIDDHESH SURESH KANNA, this programming assignment is OUR own work
+ *  and WE have not provided this code to any other student.
+ *
+ *  Number of slip days used: 1
+ *
+ *  Student 1 (Student whose Canvas account is being used)
+ *  UTEID: jd53398
+ *  email address: jay.dasari@utexas.edu
+ *  Grader name: Bersam Basagaoglu
+ *
+ *  Student 2
+ *  UTEID: ms94655
+ *  email address: mugunth.sureshkanna@gmail.com
+ *
+ */
+
 import java.io.IOException;
 
 /**
@@ -85,19 +103,19 @@ public class Compressor {
      */
     private int writeHeader(BitOutputStream bout, int numBits) throws IOException {
         // Write the magic number and format number to the header
-        bout.writeBits(32, IHuffConstants.MAGIC_NUMBER);
-        bout.writeBits(32, formatNumber);
-        numBits += 64;
+        bout.writeBits(IHuffConstants.BITS_PER_INT, IHuffConstants.MAGIC_NUMBER);
+        bout.writeBits(IHuffConstants.BITS_PER_INT, formatNumber);
+        numBits += IHuffConstants.BITS_PER_INT * 2;
         if (formatNumber == IHuffConstants.STORE_COUNTS) {
             // Write frequency counts for all characters
             for (int i = 0; i < freq.length; i++) {
-                bout.writeBits(32, freq[i]);
-                numBits += 32;
+                bout.writeBits(IHuffConstants.BITS_PER_INT, freq[i]);
+                numBits += IHuffConstants.BITS_PER_INT;
             }
         } else if (formatNumber == IHuffConstants.STORE_TREE) {
             // Write the size of the tree and its structure
-            bout.writeBits(32, count * 9 + tree.size());
-            numBits += 32;
+            bout.writeBits(IHuffConstants.BITS_PER_INT, count * (IHuffConstants.BITS_PER_WORD + 1) + tree.size());
+            numBits += IHuffConstants.BITS_PER_INT;
             String treeOutput = tree.printTreeHeader();
             for (int i = 0; i < treeOutput.length(); i++) {
                 bout.writeBits(1, treeOutput.charAt(i) == '0' ? 0 : 1);
