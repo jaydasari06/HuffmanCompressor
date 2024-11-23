@@ -5,6 +5,7 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+@SuppressWarnings("unused")
 public class HuffMark {
     protected static JFileChooser ourOpenChooser = new JFileChooser(System
             .getProperties().getProperty("user.dir"));
@@ -90,7 +91,8 @@ public class HuffMark {
         
         ByteBuffer buffer = null;
          try {
-             FileChannel channel = new FileInputStream(f).getChannel();
+             @SuppressWarnings("resource")
+            FileChannel channel = new FileInputStream(f).getChannel();
              buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
              byte[] barray = new byte[buffer.limit()];
            

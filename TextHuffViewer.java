@@ -299,6 +299,7 @@ public class TextHuffViewer implements IHuffViewer {
     // Get a ByteArrayInputStream to read from the given file.
     private ByteArrayInputStream getFastByteReader(File f) {
         try {
+            @SuppressWarnings("resource")
             FileChannel channel = new FileInputStream(f).getChannel();
             ByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
             byte[] barray = new byte[buffer.limit()];

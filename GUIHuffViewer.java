@@ -397,6 +397,7 @@ public class GUIHuffViewer extends JFrame implements IHuffViewer {
 
 
 
+    @SuppressWarnings("unused")
     private ProgressMonitorInputStream getMonitorableStream(File file,
             String message) {
         try {
@@ -458,6 +459,7 @@ public class GUIHuffViewer extends JFrame implements IHuffViewer {
     private ByteArrayInputStream getFastByteReader(File f){
         ByteBuffer buffer = null;
         try {
+            @SuppressWarnings("resource")
             FileChannel channel = new FileInputStream(f).getChannel();
             buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
             byte[] barray = new byte[buffer.limit()];
