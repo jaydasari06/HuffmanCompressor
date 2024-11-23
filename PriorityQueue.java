@@ -38,16 +38,21 @@ public class PriorityQueue<E extends Comparable<? super E>> {
 
     /**
      * Adds an element to the priority queue, maintaining sorted order.
+     * pre: node != null
      * 
      * @param node The element to add.
      */
     public void enqueue(E node) {
+        if (node == null) {
+            throw new IllegalArgumentException("node cannot be null");
+        }
         int index = binarySearch(arr, node);
         arr.add(index, node);
     }
 
     /**
      * Removes and returns the highest-priority element (smallest value) from the queue.
+     * pre: size > 0
      * 
      * @return The element with the highest priority.
      * @throws IllegalArgumentException If the queue is empty.
@@ -66,15 +71,6 @@ public class PriorityQueue<E extends Comparable<? super E>> {
      */
     public int size() {
         return arr.size();
-    }
-
-    /**
-     * Returns a string representation of the priority queue, displaying its elements in order.
-     * 
-     * @return A string representing the queue.
-     */
-    public String toString() {
-        return arr.toString();
     }
 
     // adapted from code for binary search from class slides

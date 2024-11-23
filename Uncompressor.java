@@ -32,11 +32,15 @@ public class Uncompressor {
     /**
      * Constructor for the Uncompressor class.
      * Initializes input and output streams for decompression.
+     * pre: bi != null, bo != null
      * 
      * @param bi BitInputStream for reading compressed data.
      * @param bo BitOutputStream for writing decompressed data.
      */
     public Uncompressor(BitInputStream bi, BitOutputStream bo) {
+        if (bi == null || bo == null) {
+            throw new IllegalArgumentException("BitInputStream and BitOutputStream cannot be null");
+        }
         bin = bi;
         bout = bo;
     }

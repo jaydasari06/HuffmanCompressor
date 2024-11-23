@@ -35,6 +35,7 @@ public class Compressor {
     /**
      * Constructor for the Compressor class.
      * Initializes the state required for compression.
+     * pre: f != null, c != null, t != null, co >= 0
      * 
      * @param f Frequency array for characters.
      * @param c Huffman codes for characters.
@@ -44,6 +45,10 @@ public class Compressor {
      * @param b Number of bits saved by compression.
      */
     public Compressor(int[] f, String[] c, HuffmanTree t, int fn, int co, int b) {
+        if (f == null || c == null || t == null || co < 0) {
+            throw new IllegalArgumentException("freq, codes, and tree cannot be null, "
+                    + "number of valid nodes in tree must be greater than 0");
+        }
         freq = f;
         codes = c;
         tree = t;
@@ -54,6 +59,7 @@ public class Compressor {
 
     /**
      * Compresses the input data stream into a compressed format.
+     * pre: bin != null, bout != null
      * 
      * @param bin BitInputStream for reading the input data.
      * @param bout BitOutputStream for writing the compressed data.
@@ -61,6 +67,9 @@ public class Compressor {
      * @throws IOException If an error occurs during reading or writing.
      */
     public int compress(BitInputStream bin, BitOutputStream bout) throws IOException {
+        if (bin == null || bout == null) {
+            throw new IllegalArgumentException("BitInputStream or BitOutputStream cannot be null");
+        }
         int numBitsWritten = 0;
         // Write the header information to the output stream
         numBitsWritten = writeHeader(bout, numBitsWritten);

@@ -31,11 +31,15 @@ public class HuffmanTree {
 
     /**
      * Constructs a HuffmanTree using character frequencies.
+     * pre: arr != null
      * 
      * @param arr An array where each index represents a character's frequency.
      *            Only characters with non-zero frequencies are included in the tree.
      */
     public HuffmanTree(int[] arr) {
+        if (arr == null) {
+            throw new IllegalArgumentException("array cannot be null");
+        }
         PriorityQueue<TreeNode> pq = new PriorityQueue<>();
         for (int i = 0; i < arr.length; i++) {
             if (arr[i] > 0) {
@@ -55,17 +59,22 @@ public class HuffmanTree {
 
     /**
      * Constructs a HuffmanTree from a serialized representation in a BitInputStream.
+     * pre: bin != null
      * 
      * @param bin The input stream containing the serialized tree data.
      * @throws IOException If an error occurs while reading the serialized data.
      */
     public HuffmanTree(BitInputStream bin) throws IOException {
+        if (bin == null) {
+            throw new IllegalArgumentException("BitInputStream cannot be null");
+        }
         size = bin.readBits(IHuffConstants.BITS_PER_INT);
         root = buildTree(new int[1], bin, null);
     }
 
     /**
      * Recursively builds the Huffman Tree from serialized input data.
+     * pre: treeSize != null, in != null
      * 
      * @param treeSize Tracks the number of nodes added to the tree (via array reference).
      * @param in       The BitInputStream containing serialized tree data.
@@ -74,6 +83,9 @@ public class HuffmanTree {
      * @throws IOException If invalid data is encountered during tree construction.
      */
     private TreeNode buildTree(int[] treeSize, BitInputStream in, TreeNode temp) throws IOException {
+        if (treeSize == null || in == null) {
+            throw new IllegalArgumentException("treeSize, in, or temp cannot be null");
+        }
         int val = in.readBits(1);
         if (treeSize[0] < size) {
             if (val == 0) { // Internal node
@@ -112,6 +124,7 @@ public class HuffmanTree {
 
     /**
      * Decodes a compressed file by traversing the Huffman Tree.
+     * pre: bin != null, bout != null, bitsWritten >= 0
      * 
      * @param bitsIn      The input stream of compressed data.
      * @param bitsOut     The output stream for decompressed data.
@@ -119,21 +132,24 @@ public class HuffmanTree {
      * @return The updated count of bits written.
      * @throws IOException If an error occurs during traversal or reading input.
      */
-    public int traverseTree(BitInputStream bitsIn, BitOutputStream bitsOut, int bitsWritten) throws IOException {
+    public int traverseTree(BitInputStream bin, BitOutputStream bout, int bitsWritten) throws IOException {
+        if (bin == null || bout == null || bitsWritten < 0) {
+            throw new IllegalArgumentException("BitInputStream and BitOutputStream cannot be null, "
+                    + "bitsWritten cannot be a negative number");
+        }
         TreeNode node = root;
         boolean seenPEOF = false;
         while (!seenPEOF) {
-            int bit = bitsIn.readBits(1);
+            int bit = bin.readBits(1);
             if (bit == -1) {
-                throw new IOException("Error reading compressed file. Unexpected end of input. "
-                        + "No PSEUDO_EOF value.");
+                throw new IOException("Error: Unexpected end of input. No PSEUDO_EOF value.");
             } else {
                 node = (bit == 0) ? node.getLeft() : node.getRight();
                 if (node.isLeaf()) {
                     if (node.getValue() == IHuffConstants.PSEUDO_EOF) {
                         seenPEOF = true;
                     } else {
-                        bitsOut.writeBits(IHuffConstants.BITS_PER_WORD, node.getValue());
+                        bout.writeBits(IHuffConstants.BITS_PER_WORD, node.getValue());
                         bitsWritten += IHuffConstants.BITS_PER_WORD;
                         node = root; // Reset to root for decoding the next sequence
                     }

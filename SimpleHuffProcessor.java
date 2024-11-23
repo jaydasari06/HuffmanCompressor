@@ -24,6 +24,7 @@ public class SimpleHuffProcessor implements IHuffProcessor {
 
     private IHuffViewer myViewer;
     private Compressor compressor; // Handles compression process and retains state from preprocessing
+    private boolean preprocessCalled;
 
     /**
      * Preprocess data so that compression is possible ---
@@ -48,6 +49,7 @@ public class SimpleHuffProcessor implements IHuffProcessor {
         int totalUncompressedBits = 0; 
         int totalCompressedBits = BITS_PER_INT * 2; 
         boolean bitsExist = true; 
+        preprocessCalled = true;
 
         // Read and count character frequencies
         while (bitsExist) {
@@ -96,6 +98,9 @@ public class SimpleHuffProcessor implements IHuffProcessor {
      * @throws IOException if an error occurs during reading or writing
      */
     public int compress(InputStream in, OutputStream out, boolean force) throws IOException {
+        if (!preprocessCalled) {
+            throw new IllegalArgumentException("preprocess must be called before compress");
+        }
         int numBitsWritten = 0;
         if (compressor.getBitsSaved() >= 0 || force) {
             BitInputStream bin = new BitInputStream(in); 
