@@ -5,7 +5,6 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-@SuppressWarnings("unused")
 public class HuffMark {
     protected static JFileChooser ourOpenChooser = new JFileChooser(System
             .getProperties().getProperty("user.dir"));
